@@ -1,26 +1,45 @@
-const chatForm = document.getElementById("chat-form");
-const chatInput = document.getElementById("chat-input");
-const chatBox = document.getElementById("chat-box");
+const backendUrl = "https://rcrahulkumar--claude-codesigner-backend.hf.space/chat";
 
-chatForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const userMessage = chatInput.value;
-  appendMessage("You", userMessage);
-  chatInput.value = "";
+async function sendMessage() {
+  const input = document.getElementById("user-input");
+  const chatBox = document.getElementById("chat-box");
+  const userMessage = input.value.trim();
+
+  if (!userMessage) return;
+
+  // Show user message
+  const userMsgEl = document.createElement("div");
+  userMsgEl.className = "message user";
+  userMsgEl.textContent = userMessage;
+  chatBox.appendChild(userMsgEl);
+
+  // Clear input
+  input.value = "";
 
   try {
-  const response = await fetch("https://rcrahulkumar--claude-codesigner-backend.hf.space/chat", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({ message: userMessage })
-});
-
-
+    const response = await fetch(backendUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message: userMessage })
+    });
 
     const data = await response.json();
-    const botReply = data.response || "No response from backend";
-    appendMessage("Claude", botReply);
+
+    // Show bot message
+    const botMsgEl = document.createElement("div");
+    botMsgEl.className = "message bot";
+    botMsgEl.textContent = data.reply || "No response";
+    chatBox.appendChild(botMsgEl);
+
+    // Scroll to bottom
+    chatBox.scrollTop = chatBox.scrollHeight;
+
   } catch (error) {
-    appendMessage("Claude", "⚠️ Error: Could not connect
+    const errorEl = document.createElement("div");
+    errorEl.className = "message bot";
+    errorEl.textContent = "⚠️ Error: Could not connect to backend.";
+    chatBox.appendChild(errorEl);
+  }
+}
