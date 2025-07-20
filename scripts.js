@@ -9,13 +9,14 @@ chatForm.addEventListener("submit", async (e) => {
   chatInput.value = "";
 
   try {
-    const response = await fetch("https://rcrahulkumar--claude-codesigner-backend.hf.space/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ message: userMessage })
-    });
+   const response = await fetch("https://rcrahulkumar--claude-codesigner-backend.hf.space/chat", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ message: userMessage })
+});
+
 
     const data = await response.json();
     const botReply = data.response || "No response from backend";
