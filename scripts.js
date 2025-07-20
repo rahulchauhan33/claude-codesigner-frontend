@@ -1,38 +1,37 @@
-const backendURL = "https://rcrahulkumar--claude-codesigner-backend.hf.space"; // Replace with your Space URL
+const chatbox = document.getElementById("chatbox");
+const userInput = document.getElementById("user-input");
 
 async function sendMessage() {
-  const inputBox = document.getElementById("user-input");
-  const message = inputBox.value.trim();
+  const message = userInput.value.trim();
   if (!message) return;
 
   appendMessage("user", message);
-  inputBox.value = "";
-
-  appendMessage("ai", "Thinking...");
+  userInput.value = "";
+  userInput.disabled = true;
 
   try {
-    const response = await fetch(`${backendURL}/chat`, {
+    const response = await fetch("https://rcrahulkumar--claude-codesigner-backend.hf.space/chat", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: message }),
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message })
     });
 
-    const result = await response.json();
-    document.querySelectorAll(".ai-msg").forEach(e => e.remove());
-    appendMessage("ai", result.response);
+    const data = await response.json();
+    appendMessage("assistant", data.response || "No reply");
   } catch (err) {
-    document.querySelectorAll(".ai-msg").forEach(e => e.remove());
-    appendMessage("ai", "Error connecting to backend.");
     console.error(err);
+    appendMessage("assistant", "Error: Could not connect to backend.");
   }
+
+  userInput.disabled = false;
 }
 
 function appendMessage(sender, text) {
-  const chatBox = document.getElementById("chat-box");
-  const div = document.createElement("div");
-  div.className = `${sender}-msg`;
-  div.textContent = `${sender === "user" ? "🧑 You" : "🤖 Claude"}: ${text}`;
-  if (sender === "ai") div.classList.add("ai-msg");
-  chatBox.appendChild(div);
-  chatBox.scrollTop = chatBox.scrollHeight;
+  const messageDiv = document.createElement("div");
+  messageDiv.className = `message ${sender}`;
+  messageDiv.textContent = `${sender === "user" ? "👤" : "🤖"}: ${text}`;
+  chatbox.appendChild(messageDiv);
+  chatbox.scrollTop = chatbox.scrollHeight;
 }
