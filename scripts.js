@@ -1,13 +1,12 @@
-const chatbox = document.getElementById("chatbox");
-const userInput = document.getElementById("user-input");
+const chatForm = document.getElementById("chat-form");
+const chatInput = document.getElementById("chat-input");
+const chatBox = document.getElementById("chat-box");
 
-async function sendMessage() {
-  const message = userInput.value.trim();
-  if (!message) return;
-
-  appendMessage("user", message);
-  userInput.value = "";
-  userInput.disabled = true;
+chatForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const userMessage = chatInput.value;
+  appendMessage("You", userMessage);
+  chatInput.value = "";
 
   try {
     const response = await fetch("https://rcrahulkumar--claude-codesigner-backend.hf.space/chat", {
@@ -15,23 +14,11 @@ async function sendMessage() {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ message })
+      body: JSON.stringify({ message: userMessage })
     });
 
     const data = await response.json();
-    appendMessage("assistant", data.response || "No reply");
-  } catch (err) {
-    console.error(err);
-    appendMessage("assistant", "Error: Could not connect to backend.");
-  }
-
-  userInput.disabled = false;
-}
-
-function appendMessage(sender, text) {
-  const messageDiv = document.createElement("div");
-  messageDiv.className = `message ${sender}`;
-  messageDiv.textContent = `${sender === "user" ? "👤" : "🤖"}: ${text}`;
-  chatbox.appendChild(messageDiv);
-  chatbox.scrollTop = chatbox.scrollHeight;
-}
+    const botReply = data.response || "No response from backend";
+    appendMessage("Claude", botReply);
+  } catch (error) {
+    appendMessage("Claude", "⚠️ Error: Could not connect
