@@ -1,57 +1,50 @@
 const chatContainer = document.getElementById("chat-container");
 const userInput = document.getElementById("user-input");
 const sendButton = document.getElementById("send-button");
+const themeToggle = document.getElementById("theme-toggle");
 
-// ✅ Your backend API endpoint
 const API_URL = "https://rcrahulkumar--claude-codesigner-backend-docker.hf.space/chat";
 
-// 🧠 Add chat bubble to DOM
+// Add message to chat
 function addMessage(sender, text) {
-  const messageElement = document.createElement("div");
-  messageElement.classList.add("message", sender);
-  messageElement.innerText = text;
-  chatContainer.appendChild(messageElement);
+  const message = document.createElement("div");
+  message.classList.add("message", sender);
+  message.textContent = text;
+  chatContainer.appendChild(message);
   chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-// 🎯 Send message to backend
+// Send user message
 async function sendMessage() {
-  const message = userInput.value.trim();
-  if (!message) return;
+  const text = userInput.value.trim();
+  if (!text) return;
 
-  addMessage("user", message);
+  addMessage("user", text);
   userInput.value = "";
 
   try {
-    const response = await fetch(API_URL, {
+    const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: message })
+      body: JSON.stringify({ message: text }),
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error ${response.status}`);
-    }
+    if (!res.ok) throw new Error("Backend error: " + res.status);
 
-    const data = await response.json();
-
-    if (data.response) {
-      addMessage("assistant", data.response);
-    } else {
-      addMessage("assistant", "⚠️ No response from AI.");
-    }
-  } catch (error) {
-    console.error("Fetch error:", error);
-    addMessage("assistant", "❌ Error connecting to backend.");
+    const data = await res.json();
+    addMessage("assistant", data.response || "⚠️ Empty response");
+  } catch (err) {
+    console.error(err);
+    addMessage("assistant", "❌ Error connecting to backend");
   }
 }
 
-// 🎯 Send on button click
+// Events
 sendButton.addEventListener("click", sendMessage);
-
-// 🎯 Send on Enter key
 userInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    sendMessage();
-  }
+  if (e.key === "Enter") sendMessage();
+});
+
+themeToggle.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
 });
