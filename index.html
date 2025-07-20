@@ -2,21 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Claude-style Design AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claude Co-Designer</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Claude-style Design Assistant</h1>
-
-    <div id="chat-box" class="chat-box"></div>
-
-    <div class="input-area">
-      <input type="text" id="user-input" placeholder="Type your message..." />
-      <button onclick="sendMessage()">Send</button>
-    </div>
+  <div class="header">
+    <h1>Claude Co-Designer</h1>
+    <button id="theme-toggle">🌙</button>
   </div>
+
+  <div id="chat-container"></div>
+
+  <div class="input-container">
+    <input type="text" id="user-input" placeholder="Type your message..." />
+    <button id="send-button">Send</button>
+  </div>
+
+  <footer>
+    <p>© 2025 Claude Co-Designer • <a href="https://github.com/rahulchauhan33/claude-codesigner-frontend" target="_blank">GitHub</a></p>
+  </footer>
 
   <script src="scripts.js"></script>
 </body>
